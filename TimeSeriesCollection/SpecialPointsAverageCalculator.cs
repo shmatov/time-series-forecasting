@@ -12,8 +12,8 @@ namespace TimeSeriesCollection
         public SpecialPointsAverageCalculator(IEnumerable<double> series, IEnumerable<int> specialPointsIndices,
             int radius)
         {
-            _series = series.ToList();
             _specialPointsIndices = specialPointsIndices;
+            _series = series.ToList();
             _offsets = Enumerable.Range(-1*radius, radius).ToList();
         }
 
