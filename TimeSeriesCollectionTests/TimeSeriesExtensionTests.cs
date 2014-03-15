@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using TimeSeriesCollection;
 
@@ -9,27 +10,27 @@ namespace TimeSeriesCollectionTests
         [TestFixture]
         public class AverageMethod
         {
-            [Test]
-            public void ShouldCalculateAverage()
+            private static readonly object[] AverageTestCase =
             {
-                var testCase = new []
-                {
-                    new {data=new double?[] {1, 3, 5}, expected=new double?[] {1, 2, 3}},
-                    new {data=new double?[] { 1, 5, 3, 1, 2 }, expected=new double?[] { 1, 3, 3, 3, 2 }},
-                    new {data=new double?[] {1, null, 3}, expected=new double?[] {1, null, 2}},
-                    new {data=new double?[] {null}, expected=new double?[] {null}},
-                    new {data=new double?[] {null, 1}, expected=new double?[] {null, 1}},
-                    new {data=new double?[] {1, null, null, 2}, expected=new double?[] {1, null, null, 2}},
-                };
+                new [] {new double?[] {1, 2, 3}, new double?[] {1, 3, 5}},
+                new [] {new double?[] {1, 3, 3, 3, 2}, new double?[] {1, 5, 3, 1, 2}},
+                new [] {new double?[] {1, null, 2}, new double?[] {1, null, 3}},
+                new [] {new double?[] {null}, new double?[] {null}},
+                new [] {new double?[] {1, null, null, 2}, new double?[] {1, null, null, 2}},
+                new [] {new double?[] {null, 1}, new double?[] {null, 1}}
+            };
 
-                foreach (var test in testCase)
-                    Assert.AreEqual(test.expected, test.data.Average());
+            [Test]
+            [TestCaseSource("AverageTestCase")]
+            public void ShouldCalculateAverage(double?[] expected, double?[] data)
+            {
+                Assert.AreEqual(expected, data.Average());
             }
 
             [Test]
-            public void ShouldReturnArrayOfNullableDoubles()
+            public void ShouldReturnEnumerableOfNullableDoubles()
             {
-                Assert.IsInstanceOf<double?[]>(new double?[] {}.Average());
+                Assert.IsInstanceOf<IEnumerable<double?>>(new double?[] {}.Average());
             }
         }
 
@@ -37,7 +38,7 @@ namespace TimeSeriesCollectionTests
         public class InterpolateMethod
         {
             [Test]
-            public void ShouldReturnArrayOfDoubles()
+            public void ShouldReturnEnumerableOfDoubles()
             {
                 Assert.IsInstanceOf<double[]>(new double?[] {}.Interpolate());
             }

@@ -6,17 +6,17 @@ namespace TimeSeriesCollection
 {
     public static class TimeSeriesExtensions
     {
-        public static double?[] Average(this double?[] series)
+        public static IEnumerable<double?> Average(this IEnumerable<double?> series)
         {
             return new SMACalculator(series).Calculate();
         }
 
-        public static double[] Interpolate(this double?[] series)
+        public static IEnumerable<double?> Interpolate(this IEnumerable<double?> series)
         {
             throw new NotImplementedException();
         }
 
-        public static double[] CalculateF(this double[] series, int[] specialPointsIndices)
+        public static IEnumerable<double> CalculateF(this IEnumerable<double> series, IEnumerable<int> specialPointsIndices)
         {
             return new SpecialPointsAverageCalculator(series, specialPointsIndices).Calculate();
         }
@@ -25,15 +25,15 @@ namespace TimeSeriesCollection
     internal class SMACalculator
     {
         private readonly int _movingWindowLength;
-        private readonly double?[] _series;
+        private readonly IEnumerable<double?> _series;
 
-        public SMACalculator(double?[] series)
+        public SMACalculator(IEnumerable<double?> series)
         {
             _series = series;
             _movingWindowLength = 3;
         }
 
-        public double?[] Calculate()
+        public IEnumerable<double?> Calculate()
         {
             var movingWindow = new LinkedList<double?>();
             return _series.Aggregate(new List<double?>(),
@@ -48,19 +48,19 @@ namespace TimeSeriesCollection
 
                     results.Add(average);
                     return results;
-                }).ToArray();
+                });
         }
     }
 
     internal class SpecialPointsAverageCalculator
     {
         private readonly int[] _offsets;
-        private readonly double[] _series;
-        private readonly int[] _specialPointsIndices;
+        private readonly List<double> _series;
+        private readonly IEnumerable<int> _specialPointsIndices;
 
-        public SpecialPointsAverageCalculator(double[] series, int[] specialPointsIndices)
+        public SpecialPointsAverageCalculator(IEnumerable<double> series, IEnumerable<int> specialPointsIndices)
         {
-            _series = series;
+            _series = series.ToList();
             _specialPointsIndices = specialPointsIndices;
             _offsets = Enumerable.Range(-1*5, 5).ToArray();
         }
@@ -77,7 +77,7 @@ namespace TimeSeriesCollection
 
         private bool SeriesHasIndex(int index)
         {
-            return index >= 0 && index < _series.Length;
+            return index >= 0 && index < _series.Count;
         }
 
         private IEnumerable<List<double>> AggregateIntoGroups(IEnumerable<List<double>> groups, IEnumerable<int> indices)
@@ -90,11 +90,10 @@ namespace TimeSeriesCollection
                 });
         }
 
-        public double[] Calculate()
+        public IEnumerable<double> Calculate()
         {
             return SpecialPointsRegions.Aggregate(PointsGroups, AggregateIntoGroups)
-                .Select(group => group.Average())
-                .ToArray();
+                .Select(group => group.Average());
         }
     }
 }
