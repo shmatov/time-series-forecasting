@@ -23,13 +23,13 @@ namespace TimeSeriesCollectionTests
                 };
 
                 foreach (var test in testCase)
-                    Assert.AreEqual(test.expected, TimeSeriesExtensions.Average(test.data));
+                    Assert.AreEqual(test.expected, test.data.Average());
             }
 
             [Test]
             public void ShouldReturnArrayOfNullableDoubles()
             {
-                Assert.IsInstanceOf<double?[]>(TimeSeriesExtensions.Average(new double?[] {}));
+                Assert.IsInstanceOf<double?[]>(new double?[] {}.Average());
             }
         }
 
@@ -39,7 +39,7 @@ namespace TimeSeriesCollectionTests
             [Test]
             public void ShouldReturnArrayOfDoubles()
             {
-                Assert.IsInstanceOf<double[]>(TimeSeriesExtensions.Interpolate(new double?[] {}));
+                Assert.IsInstanceOf<double[]>(new double?[] {}.Interpolate());
             }
         }
     }

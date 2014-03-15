@@ -6,17 +6,17 @@ namespace TimeSeriesCollection
 {
     public static class TimeSeriesExtensions
     {
-        public static double?[] Average(double?[] series)
+        public static double?[] Average(this double?[] series)
         {
             return new SMACalculator(series).Calculate();
         }
 
-        public static double[] Interpolate(double?[] series)
+        public static double[] Interpolate(this double?[] series)
         {
             throw new NotImplementedException();
         }
 
-        public static double[] CalculateF(double[] series, int[] specialPointsIndices)
+        public static double[] CalculateF(this double[] series, int[] specialPointsIndices)
         {
             return new SpecialPointsAverageCalculator(series, specialPointsIndices).Calculate();
         }
