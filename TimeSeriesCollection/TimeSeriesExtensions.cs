@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Odbc;
-using System.Linq.Expressions;
+﻿using System.Collections.Generic;
 
 namespace TimeSeriesCollection
 {

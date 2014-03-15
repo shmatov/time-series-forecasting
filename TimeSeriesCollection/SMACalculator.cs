@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace TimeSeriesCollection
 {
-    internal class SMACalculator
+    public class SMACalculator
     {
         private readonly int _movingWindowSize;
         private readonly IEnumerable<double?> _series;

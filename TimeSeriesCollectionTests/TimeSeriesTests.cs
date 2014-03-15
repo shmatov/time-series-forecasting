@@ -7,7 +7,7 @@ namespace TimeSeriesCollectionTests
     namespace TimeSeriesTests
     {
         [TestFixture]
-        public class TheConstructor
+        public class Constructor
         {
             [Test]
             public void ShouldAcceptValuesAndDates()
