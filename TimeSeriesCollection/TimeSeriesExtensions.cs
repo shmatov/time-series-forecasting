@@ -31,7 +31,6 @@ namespace TimeSeriesCollection
                     yield return current;
                 }
             }
-            
         }
 
         public static IEnumerable<double> Interpolate(this IEnumerable<double?> series)
@@ -39,10 +38,42 @@ namespace TimeSeriesCollection
             return new Interpolator(series).Calculate();
         }
 
-        public static IEnumerable<double> CalculateF(this IEnumerable<double> series,
+        public static Addition CalculateF(this IEnumerable<double> series,
             IEnumerable<int> specialPointsIndices, int radius = 3)
         {
-            return new SpecialPointsAverageCalculator(series, specialPointsIndices, radius).Calculate();
+            return new Addition(
+                new SpecialPointsAverageCalculator(series, specialPointsIndices, radius).Calculate(),
+                radius);
+        }
+
+        public static IEnumerable<double> Add(this IEnumerable<double> series, double[] f, int[] specialPointsIndices)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static IEnumerable<double> Add(this IEnumerable<double> series, Addition f, int[] specialPointsIndices)
+        {
+            var listSeries = series.ToList();
+            var offsets = Enumerable.Range(-1*f.Radius, f.Radius);
+            var additions = specialPointsIndices.SelectMany(x => offsets.Select(offset => x + offset)
+                .Where(index => index >= 0 && index < listSeries.Count)
+                .Zip(f.Series, (index, value) => new {index, value}));
+            
+            foreach (var addition in additions)
+                listSeries[addition.index] += addition.value;
+            return listSeries;
+        }
+
+        public class Addition
+        {
+            public IEnumerable<double> Series;
+            public int Radius;
+
+            public Addition(IEnumerable<double> series, int radius)
+            {
+                Series = series;
+                Radius = radius;
+            }
         }
     }
 }
