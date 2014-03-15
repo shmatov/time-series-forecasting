@@ -33,15 +33,5 @@ namespace TimeSeriesCollectionTests
                 Assert.IsInstanceOf<IEnumerable<double?>>(new double?[] {}.Average());
             }
         }
-
-        [TestFixture]
-        public class InterpolateMethod
-        {
-            [Test]
-            public void ShouldReturnEnumerableOfDoubles()
-            {
-                Assert.IsInstanceOf<double[]>(new double?[] {}.Interpolate());
-            }
-        }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Odbc;
+using System.Linq.Expressions;
 
 namespace TimeSeriesCollection
 {
@@ -10,9 +12,9 @@ namespace TimeSeriesCollection
             return new SMACalculator(series, windowSize).Calculate();
         }
 
-        public static IEnumerable<double?> Interpolate(this IEnumerable<double?> series)
+        public static IEnumerable<double> Interpolate(this IEnumerable<double?> series)
         {
-            throw new NotImplementedException();
+            return new Interpolator(series).Calculate();
         }
 
         public static IEnumerable<double> CalculateF(this IEnumerable<double> series,
