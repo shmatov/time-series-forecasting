@@ -53,18 +53,17 @@ namespace TimeSeriesCollection
             return new Interpolator(series).Calculate();
         }
 
-        public static Addition CalculateF(this IEnumerable<double> series,
-            IEnumerable<int> specialPointsIndices, int radius = 3)
+        public static Addition CalculateF(this IEnumerable<double> series, IEnumerable<int> specialPointsIndices,
+            int radius = 3)
         {
-            return new Addition(
-                new SpecialPointsAverageCalculator(series, specialPointsIndices, radius).Calculate(),
-                radius);
+            var average = new SpecialPointsAverageCalculator(series, specialPointsIndices, radius).Calculate();
+            return new Addition(average, radius);
         }
 
         public static IEnumerable<double> Add(this IEnumerable<double> series, Addition f, int[] specialPointsIndices)
         {
             var listSeries = series.ToList();
-            var offsets = Enumerable.Range(-1*f.Radius, f.Radius);
+            var offsets = Enumerable.Range(-1*f.Radius, 2*f.Radius+1);
             var additions = specialPointsIndices.SelectMany(x => offsets.Select(offset => x + offset)
                 .Where(index => index >= 0 && index < listSeries.Count)
                 .Zip(f.Series, (index, value) => new {index, value}));

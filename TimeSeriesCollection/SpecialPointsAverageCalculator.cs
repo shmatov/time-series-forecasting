@@ -14,7 +14,7 @@ namespace TimeSeriesCollection
         {
             _specialPointsIndices = specialPointsIndices;
             _series = series.ToList();
-            _offsets = Enumerable.Range(-1*radius, radius).ToList();
+            _offsets = Enumerable.Range(-1*radius, 2*radius+1).ToList();
         }
 
         private IEnumerable<IEnumerable<int>> SpecialPointsRegions
