@@ -63,7 +63,7 @@ namespace TimeSeriesCollection
         public static IEnumerable<double> Add(this IEnumerable<double> series, Addition f, int[] specialPointsIndices)
         {
             var listSeries = series.ToList();
-            var offsets = Enumerable.Range(-1*f.Radius, 2*f.Radius+1);
+            var offsets = Enumerable.Range(-1*f.Radius, 2*f.Radius + 1);
             var additions = specialPointsIndices.SelectMany(x => offsets.Select(offset => x + offset)
                 .Where(index => index >= 0 && index < listSeries.Count)
                 .Zip(f.Series, (index, value) => new {index, value}));
@@ -71,6 +71,27 @@ namespace TimeSeriesCollection
             foreach (var addition in additions)
                 listSeries[addition.index] += addition.value;
             return listSeries;
+        }
+
+        public static Addition CalculateAddition(this IEnumerable<double> series, IEnumerable<int> specialPointsIndices,
+            int radius = 3)
+        {
+            const int iterations = 5;
+            const double weight = 0.2;
+
+            var result = Enumerable.Repeat((double) 0, radius*2 + 1);
+            var seriesList = series.ToList();
+            var specialPointsIndicesArray = specialPointsIndices.ToArray();
+
+            var i = 0;
+            while (i++ < iterations)
+            {
+                var weighted = seriesList.CalculateF(specialPointsIndicesArray, radius).Series
+                    .Select(x => x*weight).ToList();
+                result = result.Zip(weighted, (res, add) => res + add);
+                seriesList.Add(new Addition(weighted, radius), specialPointsIndicesArray);
+            }
+            return new Addition(result, radius);
         }
 
         public class Addition

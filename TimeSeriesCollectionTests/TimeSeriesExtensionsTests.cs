@@ -55,5 +55,18 @@ namespace TimeSeriesCollectionTests
                 Assert.AreEqual(expected, series.Add(addition, new[] {1, 5}));
             }
         }
+
+        [TestFixture]
+        class CalculateAddition
+        {
+            [Test]
+            public void ShouldCalculateAddition()
+            {
+                var series = new double[] { 1, 2, 3, 2, 1, 3, 4, 5, 4, 3 };
+                var expected = new double[] { 2, 3, 4, 3, 2 };
+                Assert.AreEqual(expected, series.CalculateF(new[] { 2, 7 }, 2).Series);
+            }
+
+        }
     }
 }
