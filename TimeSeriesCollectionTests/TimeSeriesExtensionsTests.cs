@@ -30,5 +30,30 @@ namespace TimeSeriesCollectionTests
                 Assert.AreEqual(expected, actual.Weigh(radius));
             }
         }
+
+        [TestFixture]
+        class CalculateF
+        {
+            [Test]
+            public void ShouldCalculateF()
+            {
+                var series = new double[] {1, 2, 3, 2, 1, 3, 4, 5, 4, 3};
+                var expected = new double[] {2, 3, 4, 3, 2};
+                Assert.AreEqual(expected, series.CalculateF(new[] {2, 7}, 2).Series);
+            }
+        }
+
+        [TestFixture]
+        class Add
+        {
+            [Test]
+            public void ShouldAdd()
+            {
+                var series = new double[] {0, 0, 0, 0, 0, 0, 0};
+                var addition = new TimeSeriesExtensions.Addition(new double[] {1, 2, 3}, 1);
+                var expected = new double[] {1, 2, 3, 0, 1, 2, 3};
+                Assert.AreEqual(expected, series.Add(addition, new[] {1, 5}));
+            }
+        }
     }
 }
