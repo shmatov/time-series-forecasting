@@ -20,5 +20,15 @@ namespace TimeSeriesCollectionTests
                     new double? [] {null, null, 1, null, 1, 1, null, null}.Truncate(x => !x.HasValue));
             }
         }
+
+        [TestFixture]
+        class Weigh
+        {
+            [TestCase(2, new double[] {0, 1, 2, 1, 0}, new double[] {2, 2, 2, 2, 2})]
+            public void ShouldWeigh(int radius, double [] expected, double[] actual)
+            {
+                Assert.AreEqual(expected, actual.Weigh(radius));
+            }
+        }
     }
 }

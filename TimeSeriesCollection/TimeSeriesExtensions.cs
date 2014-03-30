@@ -33,6 +33,21 @@ namespace TimeSeriesCollection
             }
         }
 
+        private static Func<int, double, double> BuildWeightFunction(int radius)
+        {
+            return (i, x) =>
+            {
+                i = i > radius ? 2*radius - i : i;
+                return x*(i/(double) radius);
+            };
+        }
+
+        public static IEnumerable<double> Weigh(this IEnumerable<double> series, int radius = 3)
+        {
+            var f = BuildWeightFunction(radius);
+            return series.Select((value, index) => f(index, value));
+        }
+
         public static IEnumerable<double> Interpolate(this IEnumerable<double?> series)
         {
             return new Interpolator(series).Calculate();
@@ -46,11 +61,6 @@ namespace TimeSeriesCollection
                 radius);
         }
 
-        public static IEnumerable<double> Add(this IEnumerable<double> series, double[] f, int[] specialPointsIndices)
-        {
-            throw new NotImplementedException();
-        }
-
         public static IEnumerable<double> Add(this IEnumerable<double> series, Addition f, int[] specialPointsIndices)
         {
             var listSeries = series.ToList();
@@ -58,7 +68,7 @@ namespace TimeSeriesCollection
             var additions = specialPointsIndices.SelectMany(x => offsets.Select(offset => x + offset)
                 .Where(index => index >= 0 && index < listSeries.Count)
                 .Zip(f.Series, (index, value) => new {index, value}));
-            
+
             foreach (var addition in additions)
                 listSeries[addition.index] += addition.value;
             return listSeries;
