@@ -56,7 +56,8 @@ namespace TimeSeriesCollection
         public static Addition CalculateF(this IEnumerable<double> series, IEnumerable<int> specialPointsIndices,
             int radius = 3)
         {
-            var average = new SpecialPointsAverageCalculator(series, specialPointsIndices, radius).Calculate();
+            var average =
+                new SpecialPointsAverageCalculator(series, specialPointsIndices, radius).Calculate();
             return new Addition(average, radius);
         }
 
@@ -96,8 +97,8 @@ namespace TimeSeriesCollection
 
         public class Addition
         {
-            public IEnumerable<double> Series;
             public int Radius;
+            public IEnumerable<double> Series;
 
             public Addition(IEnumerable<double> series, int radius)
             {
