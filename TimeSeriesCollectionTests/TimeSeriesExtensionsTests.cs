@@ -47,21 +47,27 @@ namespace TimeSeriesCollectionTests
         [TestFixture]
         internal class Add
         {
-            [Test]
-            public void ShouldAdd()
+            [TestCase(
+                new double[] {0, 0, 0, 0, 0, 0, 0},
+                new double[] {1, 2, 3}, 1, new[] {1, 5},
+                new double[] {1, 2, 3, 0, 1, 2, 3})]
+            [TestCase(new double[] {0, 0, 0},
+                new double[] { 1, 2, 3 }, 1, new[] { 0, 2 },
+                new double[] { 2, 4, 2 })]
+            public void ShouldAdd(IEnumerable<double> series, IEnumerable<double> addition, int radius,
+                IEnumerable<int> points, IEnumerable<double> expected)
             {
-                var series = new double[] {0, 0, 0, 0, 0, 0, 0};
-                var addition = new TimeSeriesExtensions.Addition(new double[] {1, 2, 3}, 1);
-                var expected = new double[] {1, 2, 3, 0, 1, 2, 3};
-                Assert.AreEqual(expected, series.Add(addition, new[] {1, 5}));
+                var additions = new TimeSeriesExtensions.Addition(addition, radius);
+                Assert.AreEqual(expected, series.Add(additions, points));
             }
         }
 
         [TestFixture]
         internal class CalculateAdditions
         {
-            [TestCase(new double[] { 1, 2, 3, 2, 1, 3, 4, 5, 4, 3 }, new[] { 2, 7 }, new double[] { 0, 1.5, 4, 1.5, 0 })]
-            public void ShouldCalculateAdditions(IEnumerable<double> series, IEnumerable<int> points, IEnumerable<double> expected)
+            [TestCase(new double[] {1, 2, 3, 2, 1, 3, 4, 5, 4, 3}, new[] {2, 7}, new double[] {0, 1.5, 4, 1.5, 0})]
+            public void ShouldCalculateAdditions(IEnumerable<double> series, IEnumerable<int> points,
+                IEnumerable<double> expected)
             {
                 var actual = series.CalculateAddition(points, 2, 1).Series;
                 Assert.AreEqual(expected, actual);

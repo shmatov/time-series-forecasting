@@ -90,17 +90,29 @@ namespace TimeSeriesCollection
         ///     Добавление к ряду добавки в заданных точках.
         /// </summary>
         public static IEnumerable<double> Add(this IEnumerable<double> series, Addition f,
-            IList<int> pointsIndices)
+            IEnumerable<int> pointsIndices)
         {
-            var listSeries = series.ToList();
             var offsets = Enumerable.Range(-1*f.Radius, 2*f.Radius + 1);
-            var additions = pointsIndices.SelectMany(x => offsets.Select(offset => x + offset)
-                .Where(index => index >= 0 && index < listSeries.Count)
-                .Zip(f.Series, (index, value) => new {index, value}));
 
-            foreach (var addition in additions)
-                listSeries[addition.index] += addition.value;
-            return listSeries;
+            var additions = pointsIndices.SelectMany(x =>
+                offsets.Select(offset => x + offset)
+                    .Zip(f.Series, (index, value) => new {index, value})
+                );
+
+            return series.Select((value, index) => new {index, value})
+                .GroupJoin(additions, x => x.index, x => x.index, (s, add) => s.value + add.Sum(x => x.value));
+        }
+
+
+        /// <summary>
+        ///     Добавление к ряду добавок в задданых точках.
+        /// </summary>
+        public static IEnumerable<double> Add(this IEnumerable<double> series, IEnumerable<Addition> additions,
+            IEnumerable<IEnumerable<int>> pointsIndices)
+        {
+            return additions
+                .Zip(pointsIndices, (addition, indices) => new {addition, indices})
+                .Aggregate(series, (current, x) => current.Add(x.addition, x.indices));
         }
 
 
