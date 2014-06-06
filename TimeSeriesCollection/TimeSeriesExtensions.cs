@@ -122,6 +122,7 @@ namespace TimeSeriesCollection
         public static IEnumerable<IEnumerable<Addition>> CalculateAdditions(this IEnumerable<double> s,
             IEnumerable<IEnumerable<int>> pointsIndices, int radius, double weight)
         {
+            // TODO: Fix bugs
             var indicesGroups = pointsIndices.Select(x => x.ToList()).ToList();
             var series = s.ToList();
 
