@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace TimeSeriesCollection
 {
@@ -119,24 +120,29 @@ namespace TimeSeriesCollection
         /// <summary>
         ///     Итеративный алгоритм вычисления взвешенных добавок.
         /// </summary>
-        public static IEnumerable<IEnumerable<Addition>> CalculateAdditions(this IEnumerable<double> s,
-            IEnumerable<IEnumerable<int>> pointsIndices, int radius, double weight)
+        public static IEnumerable<IEnumerable<Addition>> CalculateAdditions(
+            this IEnumerable<double> series,
+            IEnumerable<double> goalSeries,
+            IEnumerable<IEnumerable<int>> pointsIndices,
+            int radius, double weight)
         {
-            // TODO: Fix bugs
             var indicesGroups = pointsIndices.Select(x => x.ToList()).ToList();
-            var series = s.ToList();
-
+            var seriesList = series.ToList();
+            var goalSeriesList = goalSeries.ToList();
+            
             while (true)
             {
-                var seriesAddition = Enumerable.Repeat<double>(0, series.Count);
+                var diffList = goalSeriesList.Zip(seriesList, (o, x) => o - x).ToList();
+
+                var additionAccumualtor = Enumerable.Repeat<double>(0, seriesList.Count);
                 var additions = new List<Addition>();
                 foreach (var indices in indicesGroups)
                 {
-                    var addition = series.CalculateAddition(indices, radius, weight);
+                    var addition = diffList.CalculateAddition(indices, radius, weight);
                     additions.Add(addition);
-                    seriesAddition = seriesAddition.Add(addition, indices);
+                    additionAccumualtor = additionAccumualtor.Add(addition, indices);
                 }
-                series = series.Zip(seriesAddition, (x, a) => x + a).ToList();
+                seriesList = seriesList.Zip(additionAccumualtor, (x, a) => x + a).ToList();
                 yield return additions;
             }
         }

@@ -52,10 +52,10 @@ namespace Runner
             }
 
 
-            var additions = diffSeries.CalculateAdditions(specialPointsGroups, radius: Radius, weight: 0.5).Take(100).Last();
-            var added = smoothedSeries.Add(additions, specialPointsGroups);
+            var added = smoothedSeries
+                .CalculateAdditions(series, specialPointsGroups, radius: Radius, weight: 0.5).Take(100)
+                .Aggregate<IEnumerable<TimeSeriesExtensions.Addition>, IEnumerable<double>>(smoothedSeries, (current, additions) => current.Add(additions, specialPointsGroups));
             Write("data/added.txt", added);
-
         }
 
         static IEnumerable<double?> ReadSeries(string filename)
