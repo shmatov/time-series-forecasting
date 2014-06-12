@@ -129,7 +129,7 @@ namespace TimeSeriesCollection
             var indicesGroups = pointsIndices.Select(x => x.ToList()).ToList();
             var seriesList = series.ToList();
             var goalSeriesList = goalSeries.ToList();
-            
+
             while (true)
             {
                 var diffList = goalSeriesList.Zip(seriesList, (o, x) => o - x).ToList();

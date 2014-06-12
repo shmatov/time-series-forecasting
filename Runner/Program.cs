@@ -34,6 +34,7 @@ namespace Runner
                 subSeries.Add(value);
                 smoothedSeries.Add(new EMAForecaster(subSeries, 0.4).Forecast(ForecastingPeriod).Last());
             }
+            smoothedSeries = smoothedSeries.Concat(new EMAForecaster(subSeries, 0.4).Forecast(ForecastingPeriod)).ToList();
             Write("data/smoothed.txt", smoothedSeries);
 
 
