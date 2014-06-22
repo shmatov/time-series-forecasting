@@ -42,7 +42,8 @@ namespace TimeSeriesCollection
 
         public IEnumerable<double> Calculate()
         {
-            return SpecialPointsRegions.Aggregate(PointsGroups, AggregateIntoGroups).Select(group => group.Average());
+            var groups = SpecialPointsRegions.Aggregate(PointsGroups, AggregateIntoGroups).ToList();
+            return groups.Select(group => group.Count > 0 ? group.Average() : 0);
         }
     }
 }
