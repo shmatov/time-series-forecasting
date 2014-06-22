@@ -1,0 +1,12 @@
+{
+    "Series": [
+	0, 0, 1, 2, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 2, 1, 0, 0
+    ],
+    "StartForecastingFrom": 10,
+    "Points": [
+	{
+	    "Radius": 4,
+	    "Indices": [4, 17]
+	}
+    ]
+}
