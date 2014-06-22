@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 
 namespace TimeSeriesCollection
 {
@@ -24,6 +23,33 @@ namespace TimeSeriesCollection
             return new SMACalculator(series, windowSize).Calculate();
         }
 
+        public static IEnumerable<T> ExtendRight<T>(this IEnumerable<T> series, int period)
+        {
+            var last = default(T);
+            var enumerator = series.GetEnumerator();
+            while (enumerator.MoveNext()) yield return last = enumerator.Current;
+            while (period-- > 0) yield return last;
+        }
+
+        public static IEnumerable<T> ShiftRight<T>(this IEnumerable<T> series, int period)
+        {
+            foreach (var value in series)
+            {
+                while (period-- > 0)
+                    yield return value;
+                yield return value;
+            }
+        }
+
+        public static IEnumerable<double> EMA(this IEnumerable<double> series, double alpha)
+        {
+            double? ema = null;
+            foreach (var value in series)
+            {
+                ema = ema.HasValue ? alpha*value + (1 - alpha)*ema : value;
+                yield return ema.Value;
+            }
+        } 
 
         public static IEnumerable<T> Truncate<T>(this IEnumerable<T> series, Func<T, bool> predicate)
         {
@@ -71,7 +97,8 @@ namespace TimeSeriesCollection
             return (i, x) =>
             {
                 i = i > radius ? 2*radius - i : i;
-                return x*(i/(double) radius);
+                if (i == 0) i = 1;
+                return x*i/radius;
             };
         }
 
@@ -124,10 +151,12 @@ namespace TimeSeriesCollection
             this IEnumerable<double> series,
             IEnumerable<double> goalSeries,
             IEnumerable<IEnumerable<int>> pointsIndices,
-            int radius, double weight)
+            IEnumerable<int> radiuses,
+            double weight)
         {
             var indicesGroups = pointsIndices.Select(x => x.ToList()).ToList();
             var seriesList = series.ToList();
+            var radiusesList = radiuses.ToList();
             var goalSeriesList = goalSeries.ToList();
 
             while (true)
@@ -136,11 +165,11 @@ namespace TimeSeriesCollection
 
                 var additionAccumualtor = Enumerable.Repeat<double>(0, seriesList.Count);
                 var additions = new List<Addition>();
-                foreach (var indices in indicesGroups)
+                foreach (var group in indicesGroups.Zip(radiusesList, (indices, r) => new {Indices = indices, Radius = r}))
                 {
-                    var addition = diffList.CalculateAddition(indices, radius, weight);
+                    var addition = diffList.CalculateAddition(group.Indices, group.Radius, weight);
                     additions.Add(addition);
-                    additionAccumualtor = additionAccumualtor.Add(addition, indices);
+                    additionAccumualtor = additionAccumualtor.Add(addition, group.Indices);
                 }
                 seriesList = seriesList.Zip(additionAccumualtor, (x, a) => x + a).ToList();
                 yield return additions;
